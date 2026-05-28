@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using MakePay;
+using Xunit;
 
 namespace MakePay.Tests;
 
