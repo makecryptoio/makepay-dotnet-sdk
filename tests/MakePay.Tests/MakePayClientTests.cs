@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text.Json;
 using MakePay;
+using Xunit;
 
 namespace MakePay.Tests;
 
