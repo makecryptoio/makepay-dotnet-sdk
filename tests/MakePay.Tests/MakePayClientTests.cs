@@ -11,9 +11,11 @@ public sealed class MakePayClientTests
     public async Task CreatePaymentLinkSendsAuthHeadersAndPayload()
     {
         HttpRequestMessage? capturedRequest = null;
-        var handler = new StubHandler(request =>
+        string? capturedBody = null;
+        var handler = new StubHandler(async request =>
         {
             capturedRequest = request;
+            capturedBody = request.Content == null ? null : await request.Content.ReadAsStringAsync();
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
                 Content = new StringContent("{\"paymentLink\":{\"uid\":\"pay_123\",\"publicUrl\":\"https://makepay.io/payment/pay_123\"}}")
@@ -46,8 +48,8 @@ public sealed class MakePayClientTests
         Assert.True(capturedRequest.Headers.TryGetValues("X-MakeCrypto-Key-Secret", out var keySecrets));
         Assert.Equal("key_secret", keySecrets.Single());
 
-        var requestBody = await capturedRequest.Content!.ReadAsStringAsync();
-        using var json = JsonDocument.Parse(requestBody);
+        Assert.NotNull(capturedBody);
+        using var json = JsonDocument.Parse(capturedBody!);
         Assert.Equal("active", json.RootElement.GetProperty("status").GetString());
         Assert.Equal("10.00", json.RootElement.GetProperty("payload").GetProperty("amount").GetString());
         Assert.Equal("pay_123", response.RootElement.GetProperty("paymentLink").GetProperty("uid").GetString());
@@ -74,16 +76,21 @@ public sealed class MakePayClientTests
 
     private sealed class StubHandler : HttpMessageHandler
     {
-        private readonly Func<HttpRequestMessage, HttpResponseMessage> responder;
+        private readonly Func<HttpRequestMessage, Task<HttpResponseMessage>> responder;
 
-        public StubHandler(Func<HttpRequestMessage, HttpResponseMessage> responder)
+        public StubHandler(Func<HttpRequestMessage, Task<HttpResponseMessage>> responder)
         {
             this.responder = responder;
         }
 
+        public StubHandler(Func<HttpRequestMessage, HttpResponseMessage> responder)
+            : this(request => Task.FromResult(responder(request)))
+        {
+        }
+
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            return Task.FromResult(responder(request));
+            return responder(request);
         }
     }
 }
