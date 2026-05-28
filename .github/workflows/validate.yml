@@ -1,0 +1,22 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet restore tests/MakePay.Tests/MakePay.Tests.csproj
+      - run: dotnet test tests/MakePay.Tests/MakePay.Tests.csproj --configuration Release --no-restore
+      - run: dotnet pack src/MakePay/MakePay.csproj --configuration Release --output ./artifacts

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <PackageId>MakePay</PackageId>
+    <Title>MakePay .NET SDK</Title>
+    <Description>Official .NET SDK for MakePay payment links, checkout helpers, bookkeeping, and webhook verification.</Description>
+    <Authors>Ethan Carter</Authors>
+    <Company>MakeCrypto</Company>
+    <PackageProjectUrl>https://github.com/makecryptoio/makepay-dotnet-sdk</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/makecryptoio/makepay-dotnet-sdk</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.5" />
+  </ItemGroup>
+</Project>
